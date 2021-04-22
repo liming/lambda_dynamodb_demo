@@ -1,5 +1,5 @@
 {
-  "name": "lambda_dynamo_rest",
+  "name": "lambda-dynamo-rest",
   "version": "1.0.0",
   "description": "Lambda DynamoDB REST API Service",
   "main": "serverless.ts",
