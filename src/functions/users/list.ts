@@ -32,6 +32,8 @@ const listUsers = () => {
   const client: DocumentClient = new DocumentClient();
   const params: DocumentClient.ScanInput = {
     TableName: Constants.USER_TABLE,
+    // do not read credentials
+    ProjectionExpression: 'id, username, email, firstName, lastName',
   };
 
   return new Promise((resolve, reject) => {
