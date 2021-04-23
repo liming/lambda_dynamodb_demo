@@ -16,6 +16,15 @@ const iamRoleStatement: AwsIamPolicyStatements = [
       'Fn::GetAtt': ['UsersTable', 'Arn']
     }
   },
+  {
+    Effect: 'Allow',
+    Action: [
+      'dynamodb:PutItem'
+    ],
+    Resource: {
+      'Fn::GetAtt': ['UniquesTable', 'Arn']
+    }
+  },
 ];
 
 const serverlessConfiguration: AWS = {
@@ -26,7 +35,8 @@ const serverlessConfiguration: AWS = {
       webpackConfig: './webpack.config.js',
       includeModules: true,
     },
-    userTableName: 'users-table-${self:provider.stage}'
+    userTableName: 'users-table-${self:provider.stage}',
+    uniqueTableName: 'uniques-table-${self:provider.stage}'
   },
   plugins: ['serverless-webpack'],
   provider: {
@@ -39,6 +49,8 @@ const serverlessConfiguration: AWS = {
       shouldStartNameWithService: true,
     },
     environment: {
+      USERS_TABLE: '${self:custom.userTableName}',
+      UNIQUES_TABLE: '${self:custom.uniqueTableName}',
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
     },
     lambdaHashingVersion: '20201221',
@@ -60,6 +72,22 @@ const serverlessConfiguration: AWS = {
           ],
           KeySchema: [
             { AttributeName: 'id', KeyType: 'HASH' }
+          ],
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 1,
+            WriteCapacityUnits: 1
+          }
+        }
+      },
+      UniquesTable: {
+        Type: 'AWS::DynamoDB::Table',
+        Properties: {
+          TableName: '${self:custom.uniqueTableName}',
+          AttributeDefinitions: [
+            { AttributeName: 'value', AttributeType: 'S' }
+          ],
+          KeySchema: [
+            { AttributeName: 'value', KeyType: 'HASH' }
           ],
           ProvisionedThroughput: {
             ReadCapacityUnits: 1,

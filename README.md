@@ -12,6 +12,39 @@ Run `npm i` or `yarn` to install the packages
 
 ### Testing
 
+#### Test locally:
+
+```bash
+# test createUser function
+$ sls invoke local -f createUser --path src/functions/users/mock.json
+
+# test listUsers function
+sls invoke local -f listUsers
+```
+
+#### Test Remotely
+
+To create a user:
+
+```bash
+$ curl --location --request POST 'https://uzu36xfz2i.execute-api.ap-southeast-2.amazonaws.com/dev/users' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "username": "bb1038",
+    "firstName": "Benjamin",
+    "lastName": "Button",
+    "credentials": "badpassword",
+    "email": "notarealbenjaminbutton@gmail.com"
+}'
+
+```
+
+To list all users:
+
+```bash
+$ curl https://uzu36xfz2i.execute-api.ap-southeast-2.amazonaws.com/dev/users
+```
+
 ### Deploy
 
 Run `sls deploy` to deploy to AWS.
