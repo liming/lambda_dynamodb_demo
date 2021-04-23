@@ -3,7 +3,8 @@ import type { AWS, AwsIamPolicyStatements } from '@serverless/typescript';
 import { createUser, listUsers } from '@functions/users';
 
 // Define IAM role statements for:
-// 1. DynamoDB
+// 1. DynamoDB UsersTable
+// 2. DynamoDB UniquesTable (To ensure unique value)
 const iamRoleStatement: AwsIamPolicyStatements = [
   {
     Effect: 'Allow',
