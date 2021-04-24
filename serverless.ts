@@ -26,6 +26,13 @@ const iamRoleStatement: AwsIamPolicyStatements = [
       'Fn::GetAtt': ['UniquesTable', 'Arn']
     }
   },
+  {
+    Effect: 'Allow',
+    Action: [
+      'kms:Encrypt'
+    ],
+    Resource: '${self:custom.encryptedKey}'
+  }
 ];
 
 const serverlessConfiguration: AWS = {
@@ -37,7 +44,8 @@ const serverlessConfiguration: AWS = {
       includeModules: true,
     },
     userTableName: 'users-table-${self:provider.stage}',
-    uniqueTableName: 'uniques-table-${self:provider.stage}'
+    uniqueTableName: 'uniques-table-${self:provider.stage}',
+    encryptedKey: '${ssm:/lambda-dynamodb-demo/${self:provider.stage}/kmskey}'
   },
   plugins: ['serverless-webpack'],
   provider: {
@@ -52,6 +60,7 @@ const serverlessConfiguration: AWS = {
     environment: {
       USERS_TABLE: '${self:custom.userTableName}',
       UNIQUES_TABLE: '${self:custom.uniqueTableName}',
+      ENCRYPTED_KEY: '${self:custom.encryptedKey}',
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
     },
     lambdaHashingVersion: '20201221',

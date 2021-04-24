@@ -13,6 +13,7 @@ import schema from './schema';
 import { UserModel } from './model';
 import Constants from 'src/configs/constants';
 import { AWSError } from 'aws-sdk/lib/error';
+import { encryptPassword } from '@libs/encrypt-password';
 
 /**
  * 
@@ -22,16 +23,19 @@ import { AWSError } from 'aws-sdk/lib/error';
 const create: ValidatedEventAPIGatewayProxyEventHandler<typeof schema> = async (event) => {
   const { username, firstName, lastName, email, credentials } = event.body;
 
-  const newUser: UserModel = {
-    id: uuid.v1(),
-    username,
-    firstName,
-    lastName,
-    email,
-    credentials,
-  };
-
   try {
+    // encrypt password
+    const encryptedCredentials: string = await encryptPassword(credentials);
+
+    const newUser: UserModel = {
+      id: uuid.v1(),
+      username,
+      firstName,
+      lastName,
+      email,
+      credentials: encryptedCredentials,
+    };
+
     const createdUser = await saveUser(newUser);
 
     return formatJSONResponse({ data: createdUser });
@@ -95,7 +99,10 @@ const saveUser = (userItem: UserModel) => {
         return reject(err);
       }
 
-      return resolve(userItem);
+      // remove credentials from the response
+      const { credentials, ...newUser } = userItem;
+
+      return resolve(newUser);
     });
   });
 };
