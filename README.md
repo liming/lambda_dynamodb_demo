@@ -73,3 +73,5 @@ $ curl https://uzu36xfz2i.execute-api.ap-southeast-2.amazonaws.com/dev/users
 ### Deploy
 
 Run `sls deploy` to deploy to AWS.
+
+Both create user and list users API would be available on API endpoints.
