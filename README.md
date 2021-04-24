@@ -10,6 +10,31 @@ This project is trying to build a tiny but complete and production-ready lambda 
 
 Run `npm i` or `yarn` to install the packages
 
+### Manage KMS key
+
+User credential would be encrypted with CMK managed by KMS. CMK variable is saved into parameter store. Please follow below instructions to create and save CMK.
+
+1. To create a development KMS key:
+
+```bash
+$ aws kms create-key \
+      --tags TagKey=Purpose,TagValue=Test \
+      --description "Development key to encrypt lambda dynamodb user credentials"
+```
+
+Copy the ARN value.
+
+2. To save the key into parameter store
+
+```bash
+$ aws ssm put-parameter \
+      --name "/lambda-dynamodb-demo/dev/kmskey" \
+      --value "arn:aws:kms:ap-southeast-2:208516774846:key/f7ee7c50-bc49-4c04-a0b9-fe9a217d84a1" \
+      --type "String"
+```
+
+*/lambda-dynamodb-demo/dev/kmskey* will be configured and obtained from serverless application.
+
 ### Testing
 
 #### Test locally:
