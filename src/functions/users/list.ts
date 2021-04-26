@@ -1,10 +1,11 @@
 /**
  * The file defines list users function
  */
+
+import * as AWS from 'aws-sdk';
 import { APIGatewayProxyEvent } from "aws-lambda";
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { middyfy } from "@libs/middleware";
-import Constants from "src/configs/constants";
+import Constants from "@configs/constants";
 import { formatErrorResponse, formatJSONResponse } from "@libs/json-response";
 import { EventAPIGatewayProxyEventHandler } from 'src/types/api-gateway';
 import { AWSError } from "aws-sdk/lib/error";
@@ -16,7 +17,7 @@ import { AWSError } from "aws-sdk/lib/error";
  */
 const list: EventAPIGatewayProxyEventHandler = async (event: APIGatewayProxyEvent) => {
   // TODO: deal with query strings for search, pagination, etc...
-  console.log(event.queryStringParameters);
+  console.log('Query strings: ', event.queryStringParameters);
 
   try {
     const users = await listUsers();
@@ -29,15 +30,15 @@ const list: EventAPIGatewayProxyEventHandler = async (event: APIGatewayProxyEven
 
 // query users from database
 const listUsers = () => {
-  const client: DocumentClient = new DocumentClient();
-  const params: DocumentClient.ScanInput = {
+  const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
+  const params: AWS.DynamoDB.DocumentClient.ScanInput = {
     TableName: Constants.USER_TABLE,
     // do not read credentials
     ProjectionExpression: 'id, username, email, firstName, lastName',
   };
 
   return new Promise((resolve, reject) => {
-    client.scan(params, (err: AWSError, result: DocumentClient.ScanOutput) => {
+    client.scan(params, (err: AWSError, result: AWS.DynamoDB.DocumentClient.ScanOutput) => {
       if (err) {
         return reject(err);
       }
