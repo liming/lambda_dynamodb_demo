@@ -47,7 +47,7 @@ describe('List users', () => {
       ],
     };
 
-    mocked(mDocumentClient.scan).mockImplementationOnce(mockScanImp(fakeResults));
+    mocked(mDocumentClient.scan).mockImplementationOnce(mockScanImp(null, fakeResults));
 
     listUsers(getHandlerEvent(), getHandlerContext(), (err, result: APIGatewayProxyResult) => {
       expect(err).toBeNull();
@@ -58,6 +58,18 @@ describe('List users', () => {
       const { data: users } = JSON.parse(result.body);
 
       expect(users).toHaveLength(2);
+
+      done();
+    });
+  });
+
+  it('List all users with an exception', (done) => {
+    mocked(mDocumentClient.scan).mockImplementationOnce(mockScanImp(new Error('An exception'), null));
+
+    listUsers(getHandlerEvent(), getHandlerContext(), (err, result: APIGatewayProxyResult) => {
+      expect(err).toBeNull();
+      expect(result).toBeTruthy();
+      expect(result.statusCode).toEqual(501);
 
       done();
     });

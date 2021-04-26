@@ -19,6 +19,7 @@ const newUser = {
 
 // mocking AWS services
 // aws-sdk-mock has some limitations regarding to calling AWS API in a closure. Jest mock seems a better way to deal with it
+// 
 jest.mock('aws-sdk', () => {
   // KMS mock
   const mKMSInstance = {
@@ -49,8 +50,8 @@ describe('Create user', () => {
 
   it('It should create a new user', (done) => {
     // mock encrypt and transactWrite API
-    mocked(mKMS.encrypt).mockImplementationOnce(mockEncryptImp);
-    mocked(mDocumentClient.transactWrite).mockImplementationOnce(mockTransactWriteImp);
+    mocked(mKMS.encrypt).mockImplementationOnce(mockEncryptImp());
+    mocked(mDocumentClient.transactWrite).mockImplementationOnce(mockTransactWriteImp());
 
     createUser(getHandlerEvent(newUser), getHandlerContext(), (err, result: APIGatewayProxyResult) => {
       expect(err).toBeNull();
@@ -63,6 +64,36 @@ describe('Create user', () => {
 
       expect(user).toHaveProperty('id');
       expect(user.firstName).toEqual(newUser.firstName);
+
+      done();
+    });
+  });
+
+  it('It should response with an exception from write action', (done) => {
+    // mock encrypt and transactWrite API
+    mocked(mKMS.encrypt).mockImplementationOnce(mockEncryptImp());
+    mocked(mDocumentClient.transactWrite).mockImplementationOnce(mockTransactWriteImp(new Error('An exception')));
+
+    createUser(getHandlerEvent(newUser), getHandlerContext(), (err, result: APIGatewayProxyResult) => {
+      expect(err).toBeNull();
+
+      expect(result).toBeTruthy();
+      expect(result.statusCode).toEqual(501);
+
+      done();
+    });
+  });
+
+  it('It should response with an exception from encrypt action', (done) => {
+    // mock encrypt and transactWrite API
+    mocked(mKMS.encrypt).mockImplementationOnce(mockEncryptImp(new Error('An exception')));
+    mocked(mDocumentClient.transactWrite).mockImplementationOnce(mockTransactWriteImp());
+
+    createUser(getHandlerEvent(newUser), getHandlerContext(), (err, result: APIGatewayProxyResult) => {
+      expect(err).toBeNull();
+
+      expect(result).toBeTruthy();
+      expect(result.statusCode).toEqual(501);
 
       done();
     });
