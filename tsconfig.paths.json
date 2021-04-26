@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "paths": {
       "@functions/*": ["src/functions/*"],
+      "@configs/*": ["src/configs/*"],
       "@types/*": ["src/types/*"],
       "@libs/*": ["src/libs/*"]
     }

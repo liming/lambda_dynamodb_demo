@@ -4,7 +4,7 @@
  */
 
 import * as AWS from 'aws-sdk';
-import Constants from 'src/configs/constants';
+import Constants from '@configs/constants';
 
 /**
  *
@@ -17,6 +17,8 @@ export const encryptPassword = (password: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     const keyId = Constants.ENCRYPTED_KEY;
     const text = Buffer.from(password);
+
+    // encrypt password with KMS
     kmsClient.encrypt({ KeyId: keyId, Plaintext: text }, (err, result) => {
       if (err) {
         return reject(err);

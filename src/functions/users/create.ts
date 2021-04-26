@@ -3,7 +3,7 @@
  */
 import 'source-map-support/register';
 
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import * as AWS from 'aws-sdk';
 import * as uuid from 'uuid';
 import type { ValidatedEventAPIGatewayProxyEventHandler } from 'src/types/api-gateway';
 import { formatErrorResponse, formatJSONResponse } from '@libs/json-response';
@@ -11,7 +11,7 @@ import { middyfy } from '@libs/middleware';
 
 import schema from './schema';
 import { UserModel } from './model';
-import Constants from 'src/configs/constants';
+import Constants from '@configs/constants';
 import { AWSError } from 'aws-sdk/lib/error';
 import { encryptPassword } from '@libs/encrypt-password';
 
@@ -46,10 +46,10 @@ const create: ValidatedEventAPIGatewayProxyEventHandler<typeof schema> = async (
 
 // save user into database
 const saveUser = (userItem: UserModel) => {
-  const client: DocumentClient = new DocumentClient();
+  const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
 
   return new Promise((resolve, reject) => {
-    const transactItems: DocumentClient.TransactWriteItemsInput = {
+    const transactItems: AWS.DynamoDB.DocumentClient.TransactWriteItemsInput = {
       TransactItems: [
         {
           Put: {
