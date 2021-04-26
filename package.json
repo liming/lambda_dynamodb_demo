@@ -4,7 +4,8 @@
   "description": "Lambda DynamoDB REST API Service",
   "main": "serverless.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "engines": {
     "node": ">=14.15.0"

@@ -3,7 +3,6 @@
  */
 
 import * as AWS from 'aws-sdk';
-import { APIGatewayProxyEvent } from "aws-lambda";
 import { middyfy } from "@libs/middleware";
 import Constants from "@configs/constants";
 import { formatErrorResponse, formatJSONResponse } from "@libs/json-response";
@@ -12,13 +11,9 @@ import { AWSError } from "aws-sdk/lib/error";
 
 /**
  * 
- * @param event lambda event
- * @returns a lambda 
+ * @returns a lambda reponse
  */
-const list: EventAPIGatewayProxyEventHandler = async (event: APIGatewayProxyEvent) => {
-  // TODO: deal with query strings for search, pagination, etc...
-  console.log('Query strings: ', event.queryStringParameters);
-
+const list: EventAPIGatewayProxyEventHandler = async () => {
   try {
     const users = await listUsers();
 

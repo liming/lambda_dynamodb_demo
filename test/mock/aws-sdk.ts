@@ -5,17 +5,31 @@
 import * as AWS from "aws-sdk";
 import type { Context } from "aws-lambda/handler"
 
-export const mockEncryptImp = (_, callback?: (err: AWS.AWSError | null, result: AWS.KMS.EncryptResponse) => void): any => {
-  if (callback) {
-    callback(null, { CiphertextBlob: 'anencryptkey' });
+export const mockAWSError = (message: string): AWS.AWSError => {
+  return { message, name: 'mockError', code: '123', time: new Date() };
+};
+
+export const mockEncryptImp = (err?: Error) => (_, callback?: (err: AWS.AWSError | null, result: AWS.KMS.EncryptResponse) => void): any => {
+  if (err) {
+    callback(mockAWSError(err.message), null);
   }
+
+  callback(null, { CiphertextBlob: 'anencryptkey' });
 }
 
-export const mockTransactWriteImp = (_, callback?: (err: AWS.AWSError | null, result: AWS.DynamoDB.DocumentClient.TransactWriteItemsOutput) => void): any => {
-  callback(null, {});
+export const mockTransactWriteImp = (err?: Error) => (_, callback?: (err: AWS.AWSError | null, result: AWS.DynamoDB.DocumentClient.TransactWriteItemsOutput) => void): any => {
+  if (err) {
+    callback(mockAWSError(err.message), null);
+  }
+
+  callback(null, null);
 }
 
-export const mockScanImp = (result: AWS.DynamoDB.DocumentClient.ScanOutput) => (_, callback?: (err: AWS.AWSError | null, result: AWS.DynamoDB.DocumentClient.ScanOutput) => void): any => {
+export const mockScanImp = (err: Error, result: AWS.DynamoDB.DocumentClient.ScanOutput) => (_, callback?: (err: AWS.AWSError | null, result: AWS.DynamoDB.DocumentClient.ScanOutput) => void): any => {
+  if (err) {
+    callback(mockAWSError(err.message), null);
+  }
+
   callback(null, result);
 }
 

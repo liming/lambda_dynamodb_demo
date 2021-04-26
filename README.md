@@ -37,6 +37,18 @@ $ aws ssm put-parameter \
 
 ### Testing
 
+#### Running unit test
+
+```bash
+$ npm test
+```
+
+#### Generate test coverage
+
+```bash
+$ npm run coverage
+```
+
 #### Test locally:
 
 ```bash
