@@ -55,9 +55,15 @@ describe('List users', () => {
       expect(result.statusCode).toEqual(200);
       expect(result.body).toBeTruthy();
 
-      const { data: users } = JSON.parse(result.body);
+      const body = JSON.parse(result.body);
 
-      expect(users).toHaveLength(2);
+      expect(body).toHaveProperty('data');
+
+      const { data } = body;
+
+      expect(data).toHaveLength(2);
+      expect(data[0].type).toEqual('users');
+      expect(data[0].attributes.firstName).toEqual(fakeResults.Items[0].firstName);
 
       done();
     });
@@ -70,6 +76,12 @@ describe('List users', () => {
       expect(err).toBeNull();
       expect(result).toBeTruthy();
       expect(result.statusCode).toEqual(501);
+      expect(result.body).toBeTruthy();
+
+      const body = JSON.parse(result.body);
+
+      expect(body).toHaveProperty('errors');
+      expect(body.errors[0].status).toEqual(501);
 
       done();
     });

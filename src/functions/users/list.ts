@@ -5,9 +5,10 @@
 import * as AWS from 'aws-sdk';
 import { middyfy } from "@libs/middleware";
 import Constants from "@configs/constants";
-import { formatErrorResponse, formatJSONResponse } from "@libs/json-response";
+import { formatJSONAPIErrorResponse, formatJSONAPIArrayResponse } from "@libs/json-response";
 import { EventAPIGatewayProxyEventHandler } from 'src/types/api-gateway';
 import { AWSError } from "aws-sdk/lib/error";
+import { UserModel } from './model';
 
 /**
  * 
@@ -15,16 +16,20 @@ import { AWSError } from "aws-sdk/lib/error";
  */
 const list: EventAPIGatewayProxyEventHandler = async () => {
   try {
-    const users = await listUsers();
+    const users: UserModel[] = await listUsers();
 
-    return formatJSONResponse({ data: users });
+    return formatJSONAPIArrayResponse(users.map(user => ({
+      type: 'users',
+      id: user.id,
+      attributes: user
+    })));
   } catch (err) {
-    return formatErrorResponse(err);
+    return formatJSONAPIErrorResponse(err);
   }
 }
 
 // query users from database
-const listUsers = () => {
+const listUsers = (): Promise<UserModel[]> => {
   const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
   const params: AWS.DynamoDB.DocumentClient.ScanInput = {
     TableName: Constants.USER_TABLE,
@@ -38,7 +43,7 @@ const listUsers = () => {
         return reject(err);
       }
 
-      return resolve(result.Items);
+      return resolve(<UserModel[]> result.Items);
     });
   })
 }
