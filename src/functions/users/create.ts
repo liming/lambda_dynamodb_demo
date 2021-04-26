@@ -6,7 +6,7 @@ import 'source-map-support/register';
 import * as AWS from 'aws-sdk';
 import * as uuid from 'uuid';
 import type { ValidatedEventAPIGatewayProxyEventHandler } from 'src/types/api-gateway';
-import { formatErrorResponse, formatJSONResponse } from '@libs/json-response';
+import { formatJSONAPIErrorResponse, formatJSONAPIObjectResponse } from '@libs/json-response';
 import { middyfy } from '@libs/middleware';
 
 import schema from './schema';
@@ -26,9 +26,10 @@ const create: ValidatedEventAPIGatewayProxyEventHandler<typeof schema> = async (
   try {
     // encrypt password
     const encryptedCredentials: string = await encryptPassword(credentials);
+    const userId = uuid.v1();
 
     const newUser: UserModel = {
-      id: uuid.v1(),
+      id: userId,
       username,
       firstName,
       lastName,
@@ -38,9 +39,13 @@ const create: ValidatedEventAPIGatewayProxyEventHandler<typeof schema> = async (
 
     const createdUser = await saveUser(newUser);
 
-    return formatJSONResponse({ data: createdUser });
+    return formatJSONAPIObjectResponse({
+      type: 'users',
+      id: userId,
+      attributes: createdUser
+    }, 201);
   } catch (err) {
-    return formatErrorResponse(err);
+    return formatJSONAPIErrorResponse(err);
   }
 }
 

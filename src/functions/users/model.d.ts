@@ -2,8 +2,9 @@
  * Interface of user model
  */
 
-export interface UserModel {
-  id?: string,
+import { BaseModel } from "src/models/base-model";
+
+export interface UserModel extends BaseModel {
   username: string,
   email: string,
   credentials?: string,

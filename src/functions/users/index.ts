@@ -23,6 +23,11 @@ const createUser = {
               description: 'Validation model for creating user'
             }
           }
+        },
+        response: {
+          headers: {
+            'Content-Type': 'application/vnd.api+json'
+          }
         }
       }
     }
@@ -37,6 +42,11 @@ const listUsers = {
       http: {
         method: 'get',
         path: 'users',
+        response: {
+          headers: {
+            'Content-Type': 'application/vnd.api+json'
+          }
+        }
       }
     }
   ]

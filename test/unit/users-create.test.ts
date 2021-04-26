@@ -57,13 +57,19 @@ describe('Create user', () => {
       expect(err).toBeNull();
 
       expect(result).toBeTruthy();
-      expect(result.statusCode).toEqual(200);
+      expect(result.statusCode).toEqual(201);
       expect(result.body).toBeTruthy();
 
-      const { data: user } = JSON.parse(result.body);
+      const body = JSON.parse(result.body);
 
-      expect(user).toHaveProperty('id');
-      expect(user.firstName).toEqual(newUser.firstName);
+      expect(body).toHaveProperty('data');
+
+      const { data } = body;
+
+      expect(data).toHaveProperty('id');
+      expect(data).toHaveProperty('attributes');
+      expect(data.type).toEqual('users');
+      expect(data.attributes.firstName).toEqual(newUser.firstName);
 
       done();
     });
@@ -79,6 +85,12 @@ describe('Create user', () => {
 
       expect(result).toBeTruthy();
       expect(result.statusCode).toEqual(501);
+      expect(result.body).toBeTruthy();
+
+      const body = JSON.parse(result.body);
+
+      expect(body).toHaveProperty('errors');
+      expect(body.errors[0].status).toEqual(501);
 
       done();
     });
